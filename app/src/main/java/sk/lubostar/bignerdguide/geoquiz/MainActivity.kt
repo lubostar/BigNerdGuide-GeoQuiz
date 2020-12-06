@@ -15,6 +15,8 @@ class MainActivity : AppCompatActivity() {
         Question(R.string.question_asia, true))
 
     private var currentIndex = 0
+    private var numberOfAnswered = 0
+    private var numberOfCorrect = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,17 +42,49 @@ class MainActivity : AppCompatActivity() {
         updateQuestion()
     }
 
-    private fun updateQuestion() = question_text_view.setText(questionBank[currentIndex].textResId)
+    private fun updateQuestion(){
+        with(questionBank[currentIndex]){
+            question_text_view.setText(textResId)
+            if(answered){
+                disableButtons()
+            }else {
+                enableButtons()
+            }
+        }
+    }
 
     private fun checkAnswer(userAnswer: Boolean) {
-        val correctAnswer = questionBank[currentIndex].answer
+        disableButtons()
+        numberOfAnswered++
+
+        val correctAnswer = with(questionBank[currentIndex]){
+            answered = true
+            answer
+        }
 
         val messageResId = if (userAnswer == correctAnswer) {
+            numberOfCorrect++
             R.string.correct_toast
         } else {
             R.string.incorrect_toast
         }
 
-        Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
+        if(numberOfAnswered == questionBank.size) {
+            Toast.makeText(this,
+                getString(R.string.result_text, numberOfCorrect, numberOfAnswered),
+                Toast.LENGTH_SHORT).show()
+        }else {
+            Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun disableButtons(){
+        false_button.isEnabled = false
+        true_button.isEnabled = false
+    }
+
+    private fun enableButtons(){
+        false_button.isEnabled = true
+        true_button.isEnabled = true
     }
 }
