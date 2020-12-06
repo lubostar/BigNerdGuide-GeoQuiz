@@ -2,7 +2,6 @@ package sk.lubostar.bignerdguide.geoquiz
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -21,14 +20,23 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        true_button.setOnClickListener { view: View -> checkAnswer(true) }
-        false_button.setOnClickListener { view: View -> checkAnswer(false) }
+        true_button.setOnClickListener { checkAnswer(true) }
+        false_button.setOnClickListener { checkAnswer(false) }
 
-        next_button.setOnClickListener {
-            currentIndex = (currentIndex + 1) % questionBank.size
-            updateQuestion()
-        }
+        question_text_view.setOnClickListener { nextQuestion() }
+        next_button.setOnClickListener { nextQuestion() }
+        prev_button.setOnClickListener { prevQuestion() }
 
+        updateQuestion()
+    }
+
+    private fun nextQuestion() {
+        currentIndex = (currentIndex + 1) % questionBank.size
+        updateQuestion()
+    }
+
+    private fun prevQuestion() {
+        currentIndex = (currentIndex + questionBank.size - 1) % questionBank.size
         updateQuestion()
     }
 
