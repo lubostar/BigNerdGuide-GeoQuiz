@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
         cheat_button.setOnClickListener {
             startActivityForResult(viewModel.getCheatIntent(this), REQUEST_CODE_CHEAT)
         }
+        updateCheatCountText()
 
         viewModel.currentIndex = savedInstanceState?.getInt(KEY_INDEX, 0) ?: 0
         updateQuestion()
@@ -42,7 +43,17 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode != Activity.RESULT_OK) return
-        if (requestCode == REQUEST_CODE_CHEAT) viewModel.isCheater(data)
+        if (requestCode == REQUEST_CODE_CHEAT){
+            viewModel.isCheater(data)
+            updateCheatCountText()
+        }
+    }
+
+    private fun updateCheatCountText(){
+        cheat_counter.text = getString(R.string.cheats_count, viewModel.cheatsCount)
+        if(viewModel.cheatsCount == 0){
+            cheat_button.isEnabled = false
+        }
     }
 
     private fun nextQuestion(){

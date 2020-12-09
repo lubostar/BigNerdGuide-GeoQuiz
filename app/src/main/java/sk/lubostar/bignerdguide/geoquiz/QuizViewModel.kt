@@ -5,6 +5,10 @@ import android.content.Intent
 import androidx.lifecycle.ViewModel
 
 class QuizViewModel: ViewModel() {
+    companion object{
+        private const val MAX_NUMBER_CHEATS_AVAILABLE = 3
+    }
+
     private val questionBank = listOf(
         Question(R.string.question_australia, true),
         Question(R.string.question_oceans, true),
@@ -25,6 +29,9 @@ class QuizViewModel: ViewModel() {
 
     val allQuestionsAnswered: Boolean
         get() = numberOfAnswered == questionBank.size
+
+    val cheatsCount: Int
+        get() = MAX_NUMBER_CHEATS_AVAILABLE - questionBank.filter { it.cheated }.count()
 
     fun getCheatIntent(context: Context): Intent{
         with(questionBank[currentIndex]){
