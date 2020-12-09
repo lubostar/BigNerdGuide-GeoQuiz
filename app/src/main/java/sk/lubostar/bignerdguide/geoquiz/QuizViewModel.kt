@@ -1,5 +1,7 @@
 package sk.lubostar.bignerdguide.geoquiz
 
+import android.content.Context
+import android.content.Intent
 import androidx.lifecycle.ViewModel
 
 class QuizViewModel: ViewModel() {
@@ -15,6 +17,8 @@ class QuizViewModel: ViewModel() {
     var numberOfAnswered = 0
     var numberOfCorrect = 0
 
+    private var isCheater = false
+
     val currentQuestionTextResId: Int
         get() = questionBank[currentIndex].textResId
 
@@ -24,6 +28,14 @@ class QuizViewModel: ViewModel() {
     val allQuestionsAnswered: Boolean
         get() = numberOfAnswered == questionBank.size
 
+    fun getCheatIntent(context: Context): Intent{
+        return CheatActivity.newIntent(context, questionBank[currentIndex].answer)
+    }
+
+    fun isCheater(data: Intent?){
+        isCheater = data?.getBooleanExtra(CheatActivity.EXTRA_ANSWER_SHOWN, false) ?: false
+    }
+
     fun answerQuestion(userAnswer: Boolean) : Int{
         numberOfAnswered++
 
@@ -32,11 +44,12 @@ class QuizViewModel: ViewModel() {
             answer
         }
 
-        return if (userAnswer == correctAnswer) {
-            numberOfCorrect++
-            R.string.correct_toast
-        } else {
-            R.string.incorrect_toast
+        if(userAnswer == correctAnswer) numberOfCorrect++
+
+        return when {
+            isCheater -> R.string.judgment_toast
+            userAnswer == correctAnswer -> R.string.correct_toast
+            else -> R.string.incorrect_toast
         }
     }
 

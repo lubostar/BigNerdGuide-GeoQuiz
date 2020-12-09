@@ -1,5 +1,7 @@
 package sk.lubostar.bignerdguide.geoquiz
 
+import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -8,7 +10,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     companion object{
-        const val KEY_INDEX = "save_index_key"
+        private const val KEY_INDEX = "save_index_key"
+        private const val REQUEST_CODE_CHEAT = 0
     }
 
     private val viewModel: QuizViewModel by viewModels()
@@ -23,6 +26,9 @@ class MainActivity : AppCompatActivity() {
         question_text_view.setOnClickListener { nextQuestion() }
         next_button.setOnClickListener { nextQuestion() }
         prev_button.setOnClickListener { prevQuestion() }
+        cheat_button.setOnClickListener {
+            startActivityForResult(viewModel.getCheatIntent(this), REQUEST_CODE_CHEAT)
+        }
 
         viewModel.currentIndex = savedInstanceState?.getInt(KEY_INDEX, 0) ?: 0
         updateQuestion()
@@ -31,6 +37,12 @@ class MainActivity : AppCompatActivity() {
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
         super.onSaveInstanceState(savedInstanceState)
         savedInstanceState.putInt(KEY_INDEX,  viewModel.currentIndex)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode != Activity.RESULT_OK) return
+        if (requestCode == REQUEST_CODE_CHEAT) viewModel.isCheater(data)
     }
 
     private fun nextQuestion(){
