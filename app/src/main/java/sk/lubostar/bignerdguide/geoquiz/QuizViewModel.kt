@@ -11,8 +11,7 @@ class QuizViewModel: ViewModel() {
         Question(R.string.question_americas, true),
         Question(R.string.question_asia, true))
 
-    private var currentIndex = 0
-
+    var currentIndex = 0
     var numberOfAnswered = 0
     var numberOfCorrect = 0
 

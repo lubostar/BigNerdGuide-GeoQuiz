@@ -7,6 +7,9 @@ import androidx.activity.viewModels
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
+    companion object{
+        const val KEY_INDEX = "save_index_key"
+    }
 
     private val viewModel: QuizViewModel by viewModels()
 
@@ -21,7 +24,13 @@ class MainActivity : AppCompatActivity() {
         next_button.setOnClickListener { nextQuestion() }
         prev_button.setOnClickListener { prevQuestion() }
 
+        viewModel.currentIndex = savedInstanceState?.getInt(KEY_INDEX, 0) ?: 0
         updateQuestion()
+    }
+
+    override fun onSaveInstanceState(savedInstanceState: Bundle) {
+        super.onSaveInstanceState(savedInstanceState)
+        savedInstanceState.putInt(KEY_INDEX,  viewModel.currentIndex)
     }
 
     private fun nextQuestion(){
