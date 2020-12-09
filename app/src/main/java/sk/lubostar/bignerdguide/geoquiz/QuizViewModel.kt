@@ -17,8 +17,6 @@ class QuizViewModel: ViewModel() {
     var numberOfAnswered = 0
     var numberOfCorrect = 0
 
-    private var isCheater = false
-
     val currentQuestionTextResId: Int
         get() = questionBank[currentIndex].textResId
 
@@ -29,11 +27,14 @@ class QuizViewModel: ViewModel() {
         get() = numberOfAnswered == questionBank.size
 
     fun getCheatIntent(context: Context): Intent{
-        return CheatActivity.newIntent(context, questionBank[currentIndex].answer)
+        with(questionBank[currentIndex]){
+            return CheatActivity.newIntent(context, answer, cheated)
+        }
     }
 
     fun isCheater(data: Intent?){
-        isCheater = data?.getBooleanExtra(CheatActivity.EXTRA_ANSWER_SHOWN, false) ?: false
+        questionBank[currentIndex].cheated =
+            data?.getBooleanExtra(CheatActivity.EXTRA_ANSWER_SHOWN, false) ?: false
     }
 
     fun answerQuestion(userAnswer: Boolean) : Int{
@@ -47,7 +48,7 @@ class QuizViewModel: ViewModel() {
         if(userAnswer == correctAnswer) numberOfCorrect++
 
         return when {
-            isCheater -> R.string.judgment_toast
+            questionBank[currentIndex].cheated -> R.string.judgment_toast
             userAnswer == correctAnswer -> R.string.correct_toast
             else -> R.string.incorrect_toast
         }
